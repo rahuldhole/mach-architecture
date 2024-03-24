@@ -1,0 +1,62 @@
+#
+#### EDITING GUIDELINES ###
+
+##### - Use comments like Markdown (.md) titles as path with a link. 
+###### &nbsp;&nbsp; example: `[service_title_path/](service_title_path/)`
+
+##### - Preview it as .md before commit.
+
+# #########################################
+
+
+# Common
+
+## VS Code settings
+.vscode/*
+
+## vim temp files
+*.swp
+*.swo
+
+# [orchestration/](orchestration/)
+
+## [orchestration/docker-compose/](orchestration/docker-compose/)
+orchestration/docker-compose/docker-compose.override.yml
+
+# [services](services)
+
+## [services/back/api/user/](services/back/api/user/)
+
+#### Ruby Bundle
+services/back/api/user/.bundle
+
+#### Debugger
+services/back/api/user/.byebug_history
+
+#### Ignore all logfiles and tempfiles.
+services/back/api/user/log/*
+services/back/api/user/tmp/*
+!services/back/api/user/log/.keep
+!services/back/api/user/tmp/.keep
+
+#### Ignore uploaded files in development.
+services/back/api/user/storage/*
+!services/back/api/user/storage/.keep
+
+#### Ignore master key for decrypting credentials.
+services/back/api/user/config/master.key
+
+#### Ignore secrets and other files.
+services/back/api/user/.env*
+!services/back/api/user/.env.example
+
+
+
+## [services/front/pwa/](services/front/pwa/)
+services/front/pwa/node_modules/
+services/front/pwa/app/assets/builds/*
+!services/front/pwa/app/assets/builds/.keep
+services/front/pwa/public/assets/
+services/front/pwa/yarn-error.log
+services/front/pwa/yarn-debug.log*
+services/front/pwa/.yarn-integrity
