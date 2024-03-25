@@ -1,0 +1,25 @@
+#
+#### EDITING GUIDELINES ###
+
+##### - Use comments like Markdown (.md) titles as path with a link. 
+###### &nbsp;&nbsp; example: `[service_title_path/](service_title_path/)`
+
+##### - Preview it as .md before commit.
+
+# #########################################
+
+# Common
+#### See https://git-scm.com/docs/gitattributes for more about git attribute files.
+
+
+# [services](services)
+
+## [services/back/user-api/](services/back/user-api/)
+
+#### Mark the database schema as having been generated.
+services/back/user-api/db/schema.rb linguist-generated
+
+#### Mark any vendored files as having been vendored.
+services/back/user-api/vendor/* linguist-vendored
+services/back/user-api/config/credentials/*.yml.enc diff=rails_credentials
+services/back/user-api/config/credentials.yml.enc diff=rails_credentials

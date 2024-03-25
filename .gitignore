@@ -25,31 +25,39 @@ orchestration/docker-compose/docker-compose.override.yml
 
 # [services](services)
 
-## [services/back/api/user/](services/back/api/user/)
+## [services/back/user-api/](services/back/user-api/)
 
 #### Ruby Bundle
-services/back/api/user/.bundle
+services/back/user-api/.bundle
 
 #### Debugger
-services/back/api/user/.byebug_history
+services/back/user-api/.byebug_history
 
 #### Ignore all logfiles and tempfiles.
-services/back/api/user/log/*
-services/back/api/user/tmp/*
-!services/back/api/user/log/.keep
-!services/back/api/user/tmp/.keep
+services/back/user-api/log/*
+services/back/user-api/tmp/*
+!services/back/user-api/log/.keep
+!services/back/user-api/tmp/.keep
 
 #### Ignore uploaded files in development.
-services/back/api/user/storage/*
-!services/back/api/user/storage/.keep
+services/back/user-api/storage/*
+!services/back/user-api/storage/.keep
+services/back/user-api/tmp/storage/*
+!services/back/user-api/tmp/storage/
+!services/back/user-api/tmp/storage/.keep
 
 #### Ignore master key for decrypting credentials.
-services/back/api/user/config/master.key
+services/back/user-api/config/master.key
 
 #### Ignore secrets and other files.
-services/back/api/user/.env*
-!services/back/api/user/.env.example
+services/back/user-api/.env*
+!services/back/user-api/.env*.erb
+!services/back/user-api/.env.example
 
+# Ignore pidfiles, but keep the directory.
+services/back/user-api/tmp/pids/*
+!services/back/user-api/tmp/pids/
+!services/back/user-api/tmp/pids/.keep
 
 
 ## [services/front/pwa/](services/front/pwa/)
