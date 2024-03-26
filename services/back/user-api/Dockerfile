@@ -5,24 +5,23 @@ ARG RUBY_VERSION=3.3.0
 FROM ruby:$RUBY_VERSION-alpine3.19 as rubybase
 
 ## Rails dependancies
-RUN apk --update add --virtual build-dependencies make g++ git
+RUN apk --no-cache add --virtual build-dependencies tzdata make g++ git
 
 ## Postgre dependancies
-RUN apk --update add libpq
+RUN apk --no-cache add libpq-dev
 
-## Run and own only the runtime files as a non-root user for security
-RUN adduser -D rails && \
-    mkdir -pv /home/rails/db /home/rails/log /home/rails/storage /home/rails/tmp && \
-    chown -R rails:rails /home/rails/db/ /home/rails/log/ /home/rails/storage/ /home/rails/tmp/
+## A non-root user for security
+RUN adduser -D rails
 
 WORKDIR /home/rails/user-api
 
-
+## Run and own only the runtime files
+RUN mkdir db log storage tmp
+RUN touch db/.gitkeep log/.gitkeep storage/.gitkeep tmp/.gitkeep
+RUN chown -R rails:rails db/ log/ storage/ tmp/
 
 # DEVABASE ###########################################
 FROM rubybase as devbase
-
-RUN apk --update add postgresql-dev
 
 ## Add sudo user for dev runtime system changes
 RUN adduser --disabled-password admin && \
@@ -65,9 +64,6 @@ RUN bundle install && \
 ## Copy application code
 COPY . .
 
-## Precompile bootsnap code for faster boot times
-RUN bundle exec bootsnap precompile app/ lib/
-
 CMD ["/bin/zsh"]
 
 
@@ -86,9 +82,6 @@ RUN bundle install && \
 
 ## Copy application code
 COPY . .
-
-## Precompile bootsnap code for faster boot times
-RUN bundle exec bootsnap precompile app/ lib/
 
 CMD ["/bin/zsh"]
 
@@ -117,9 +110,6 @@ RUN bundle install && \
 
 ## Copy application code
 COPY . .
-
-## Precompile bootsnap code for faster boot times
-RUN bundle exec bootsnap precompile app/ lib/
 
 COPY docker-entrypoint.sh /usr/local/bin
 

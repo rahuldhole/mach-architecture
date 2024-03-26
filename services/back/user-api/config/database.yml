@@ -5,19 +5,19 @@ default: &default
 
 development:
   <<: *default
-  database: user-api-development
-  username: postgres
-  password: mysecurepass
-  host: postgres
-  port: 5432
+  database: user-api_postgres-development
+  username: <%= ENV.fetch("DATABASE_USER") %>
+  password: <%= ENV.fetch("DATABASE_PASSWORD") %>
+  host: <%= ENV.fetch("DATABASE_URL") %>
+  port: <%= ENV.fetch("DATABASE_PORT") %>
 
 test:
   <<: *default
-  username: postgres
-  password: mysecurepass
-  host: postgres
-  port: 5432
-  database: user-api-test
+  database: user-api_postgres-test
+  username: <%= ENV.fetch("DATABASE_USER") %>
+  password: <%= ENV.fetch("DATABASE_PASSWORD") %>
+  host: <%= ENV.fetch("DATABASE_URL") %>
+  port: <%= ENV.fetch("DATABASE_PORT") %>
 
 production:
   <<: *default

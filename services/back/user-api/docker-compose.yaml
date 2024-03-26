@@ -1,0 +1,46 @@
+version: '3.8'
+
+networks:
+  babunet:
+    external: true
+
+volumes:
+  user-api_postgres-data:
+    driver: local
+
+services:
+  postgres:
+    image: postgres
+    container_name: user-api_postgres-${RAILS_ENV:-development}
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    # ports:
+    #   - "5432:5432"
+    networks:
+      - babunet
+    volumes:
+      - user-api_postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+  
+  rails:
+    container_name: user-api_rails-${RAILS_ENV:-development}
+    build:
+      context: .
+      target: ${RAILS_ENV:-development}
+    command: sh -c "bin/bundle exec rails s -p 3000 -b 0.0.0.0"
+    environment: #! this variables will override .env
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_PORT: ${DATABASE_PORT}
+    ports:
+      - "3000:3000"
+    networks:
+      - babunet
+    depends_on:
+      - postgres
+    volumes:
+      - .:/home/rails/user-api
+    restart: unless-stopped

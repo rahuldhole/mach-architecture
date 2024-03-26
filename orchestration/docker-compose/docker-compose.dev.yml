@@ -1,1 +1,14 @@
+version: '3.8'
+
+services:
+  user-api:
+    container_name: user-api
+    build:
+      context: ../../services/back/user-api
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../../services/back/user-api:/home/rails/user-api
 
