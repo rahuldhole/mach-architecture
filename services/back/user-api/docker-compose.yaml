@@ -28,7 +28,7 @@ services:
     build:
       context: .
       target: ${RAILS_ENV:-development}
-    command: sh -c "bin/bundle exec rails s -p 3000 -b 0.0.0.0"
+    command: sh -c "bundle install && bin/bundle exec rails s -p ${PORT:-3000} -b 0.0.0.0"
     environment: #! this variables will override .env
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_USER: ${DATABASE_USER}
@@ -36,7 +36,7 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       DATABASE_PORT: ${DATABASE_PORT}
     ports:
-      - "3000:3000"
+      - "${PORT:-3000}:${PORT:-3000}"
     networks:
       - babunet
     depends_on:

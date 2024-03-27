@@ -98,9 +98,6 @@ GEM
       devise (~> 4.0)
       warden-jwt_auth (~> 0.8)
     dotenv (3.1.0)
-    dotenv-rails (3.1.0)
-      dotenv (= 3.1.0)
-      railties (>= 6.1)
     drb (2.2.1)
     dry-auto_inject (1.0.1)
       dry-core (~> 1.0)
@@ -167,6 +164,8 @@ GEM
       nio4r (~> 2.0)
     racc (1.7.3)
     rack (3.0.10)
+    rack-cors (2.0.2)
+      rack (>= 2.0.0)
     rack-session (2.0.0)
       rack (>= 3.0.0)
     rack-test (2.1.0)
@@ -242,10 +241,11 @@ DEPENDENCIES
   debug
   devise
   devise-jwt
-  dotenv-rails
+  dotenv
   jsonapi-serializer
   pg (~> 1.1)
   puma (>= 5.0)
+  rack-cors
   rails (~> 7.1.3, >= 7.1.3.2)
   tzinfo-data
 

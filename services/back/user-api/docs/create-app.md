@@ -22,3 +22,11 @@ rails --version #=> Rails 7.1.3.2
 rails new user-api --api –d postgresql
 ~~~
 
+## Install dependancy
+
+#### Rails dependancies
+`RUN apk --no-cache add --virtual build-dependencies tzdata make g++ git`
+
+#### Postgres dependancy
+`RUN apk --no-cache add libpq-dev`
+
