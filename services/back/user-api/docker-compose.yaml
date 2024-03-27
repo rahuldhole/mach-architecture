@@ -25,11 +25,13 @@ services:
   
   rails:
     container_name: user-api_rails-${RAILS_ENV:-development}
+    # entrypoint: ./entrypoint.sh # @override
     build:
       context: .
       target: ${RAILS_ENV:-development}
-    command: sh -c "bundle install && bin/bundle exec rails s -p ${PORT:-3000} -b 0.0.0.0"
-    environment: #! this variables will override .env
+    tty: true
+    environment: #! this variables will @override .env
+      PORT: ${PORT:-3000} 
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_USER: ${DATABASE_USER}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}

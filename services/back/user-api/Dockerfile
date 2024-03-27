@@ -1,5 +1,11 @@
 # syntax = docker/dockerfile:1
-# RUBYBASE ########################################
+
+#! ██████  ██    ██ ██████  ██    ██ ██████   █████  ███████ ███████ 
+#! ██   ██ ██    ██ ██   ██  ██  ██  ██   ██ ██   ██ ██      ██      
+#! ██████  ██    ██ ██████    ████   ██████  ███████ ███████ █████   
+#! ██   ██ ██    ██ ██   ██    ██    ██   ██ ██   ██      ██ ██      
+#! ██   ██  ██████  ██████     ██    ██████  ██   ██ ███████ ███████
+#! RUBYBASE ########################################################
 ## Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
 ARG RUBY_VERSION=3.3.0
 FROM ruby:$RUBY_VERSION-alpine3.19 as rubybase
@@ -20,7 +26,21 @@ RUN mkdir db log storage tmp
 RUN touch db/.gitkeep log/.gitkeep storage/.gitkeep tmp/.gitkeep
 RUN chown -R rails:rails db/ log/ storage/ tmp/
 
-# DEVABASE ###########################################
+# Copy Gemfile
+COPY Gemfile Gemfile.lock ./
+RUN chmod ugo+rwx Gemfile.lock
+
+# Add a custom entrypoint script
+COPY entrypoint.sh /usr/bin/entrypoint.sh
+RUN chmod +x /usr/bin/entrypoint.sh
+ENTRYPOINT [ "entrypoint.sh" ]
+
+# ██████  ███████ ██    ██ ██████   █████  ███████ ███████ 
+# ██   ██ ██      ██    ██ ██   ██ ██   ██ ██      ██      
+# ██   ██ █████   ██    ██ ██████  ███████ ███████ █████   
+# ██   ██ ██       ██  ██  ██   ██ ██   ██      ██ ██      
+# ██████  ███████   ████   ██████  ██   ██ ███████ ███████ 
+# DEVABASE ###############################################
 FROM rubybase as devbase
 
 ## Add sudo user for dev runtime system changes
@@ -46,30 +66,19 @@ RUN touch ~/.zshrc && \
 # Configure tmux
 RUN echo 'set -g default-shell /bin/zsh' > ~/.tmux.conf
 
-
-
-# DEVELOPMENT ########################################
+#? ██████  ███████ ██    ██ ███████ ██       ██████  ██████  ███    ███ ███████ ███    ██ ████████ 
+#? ██   ██ ██      ██    ██ ██      ██      ██    ██ ██   ██ ████  ████ ██      ████   ██    ██    
+#? ██   ██ █████   ██    ██ █████   ██      ██    ██ ██████  ██ ████ ██ █████   ██ ██  ██    ██    
+#? ██   ██ ██       ██  ██  ██      ██      ██    ██ ██      ██  ██  ██ ██      ██  ██ ██    ██    
+#? ██████  ███████   ████   ███████ ███████  ██████  ██      ██      ██ ███████ ██   ████    ██
+#? DEVELOPMENT ###################################################################################
 FROM devbase as development
 
 ENV RAILS_ENV="development" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="test"
 
-## Copy application code
-COPY . .
-
-CMD ["/bin/zsh"]
-
-
-
-# TEST ###############################################
-FROM devbase as test
-
-ENV RAILS_ENV="test" \
-    BUNDLE_PATH="/usr/local/bundle"
-
 ## Install application gems
-COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
@@ -79,9 +88,33 @@ COPY . .
 
 CMD ["/bin/zsh"]
 
+#? ████████ ███████ ███████ ████████ 
+#?    ██    ██      ██         ██    
+#?    ██    █████   ███████    ██    
+#?    ██    ██           ██    ██    
+#?    ██    ███████ ███████    ██  
+#? TEST ############################
+FROM devbase as test
 
+ENV RAILS_ENV="test" \
+    BUNDLE_PATH="/usr/local/bundle"
 
-# PRODUCTION #########################################
+## Install application gems
+RUN bundle install && \
+    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
+    bundle exec bootsnap precompile --gemfile
+
+## Copy application code
+COPY . .
+
+CMD ["/bin/zsh"]
+
+#* ██████  ██████   ██████  ██████  ██    ██  ██████ ████████ ██  ██████  ███    ██ 
+#* ██   ██ ██   ██ ██    ██ ██   ██ ██    ██ ██         ██    ██ ██    ██ ████   ██ 
+#* ██████  ██████  ██    ██ ██   ██ ██    ██ ██         ██    ██ ██    ██ ██ ██  ██ 
+#* ██      ██   ██ ██    ██ ██   ██ ██    ██ ██         ██    ██ ██    ██ ██  ██ ██ 
+#* ██      ██   ██  ██████  ██████   ██████   ██████    ██    ██  ██████  ██   ████
+#* PRODUCTION #####################################################################
 
 FROM rubybase as production
 
@@ -97,14 +130,9 @@ ENV RAILS_ENV="production" \
     BUNDLE_WITHOUT="development:test"
 
 ## Install application gems
-COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 
 ## Copy application code
 COPY . .
-
-COPY docker-entrypoint.sh /usr/local/bin
-
-ENTRYPOINT ["docker-entrypoint.sh"]
