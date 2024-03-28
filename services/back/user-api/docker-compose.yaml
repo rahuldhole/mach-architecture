@@ -31,14 +31,14 @@ services:
       target: ${RAILS_ENV:-development}
     tty: true
     environment: #! this variables will @override .env
-      PORT: ${PORT:-3000} 
+      PORT: ${RAILS_PORT:-3000} # @override for puma.rb, entrypoint.sh
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_USER: ${DATABASE_USER}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_HOST: ${DATABASE_HOST}
       DATABASE_PORT: ${DATABASE_PORT}
     ports:
-      - "${PORT:-3000}:${PORT:-3000}"
+      - "${RAILS_PORT:-3000}:${RAILS_PORT:-3000}"
     networks:
       - babunet
     depends_on:
