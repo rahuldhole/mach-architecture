@@ -5,7 +5,8 @@ networks:
     external: true
 
 volumes:
-  user-api_postgres-data:
+  postgres-data:
+    name: user-api_postgres-${RAILS_ENV:-development}
     driver: local
 
 services:
@@ -20,7 +21,7 @@ services:
     networks:
       - babunet
     volumes:
-      - user-api_postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
   
   rails:
