@@ -39,6 +39,10 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
+  # Enable DNS rebinding protection and other `Host` header attacks.
+  allowed_hosts = ENV['ALLOWED_HOSTS']&.split(',') || ['localhost']
+  config.hosts.concat(allowed_hosts) if allowed_hosts.present?
+
   # Tell Action Mailer not to deliver emails to the real world.
   # The :test delivery method accumulates sent emails in the
   # ActionMailer::Base.deliveries array.

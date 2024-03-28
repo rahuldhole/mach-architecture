@@ -32,6 +32,7 @@ services:
     tty: true
     environment: #! this variables will @override .env
       PORT: ${RAILS_PORT:-3000} # @override for puma.rb, entrypoint.sh
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-test.private.babunet} # @override config.hosts
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_USER: ${DATABASE_USER}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
