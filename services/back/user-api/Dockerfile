@@ -21,20 +21,6 @@ RUN adduser -D rails
 
 WORKDIR /home/rails/user-api
 
-## Run and own only the runtime files
-RUN mkdir db log storage tmp
-RUN touch db/.gitkeep log/.gitkeep storage/.gitkeep tmp/.gitkeep
-RUN chown -R rails:rails db/ log/ storage/ tmp/
-
-# Copy Gemfile
-COPY Gemfile Gemfile.lock ./
-RUN chmod ugo+rwx Gemfile.lock
-
-# Add a custom entrypoint script
-COPY entrypoint.sh /usr/bin/entrypoint.sh
-RUN chmod +x /usr/bin/entrypoint.sh
-ENTRYPOINT [ "entrypoint.sh" ]
-
 # ██████  ███████ ██    ██ ██████   █████  ███████ ███████ 
 # ██   ██ ██      ██    ██ ██   ██ ██   ██ ██      ██      
 # ██   ██ █████   ██    ██ ██████  ███████ ███████ █████   
@@ -63,6 +49,8 @@ RUN touch ~/.zshrc && \
     sed -i -e 's/plugins=(git)/plugins=(git rails bundler)/' ~/.zshrc && \
     echo 'export PATH="$PATH:/home/rails/.local/bin"' >> ~/.zshrc
 
+CMD ["/bin/zsh"]
+
 # Configure tmux
 RUN echo 'set -g default-shell /bin/zsh' > ~/.tmux.conf
 
@@ -78,6 +66,12 @@ ENV RAILS_ENV="development" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="test"
 
+# Copy Gemfile
+USER root
+COPY Gemfile Gemfile.lock ./
+RUN chmod ugo+rwx Gemfile.lock
+USER rails
+
 ## Install application gems
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
@@ -86,7 +80,17 @@ RUN bundle install && \
 ## Copy application code
 COPY . .
 
-CMD ["/bin/zsh"]
+## Run and own only the runtime files
+USER root
+RUN chown -R rails:rails db/ log/ storage/ tmp/
+
+# Add a custom entrypoint script
+COPY entrypoint.sh /usr/bin/entrypoint.sh
+RUN chmod +x /usr/bin/entrypoint.sh
+
+USER rails
+ENTRYPOINT [ "entrypoint.sh" ]
+
 
 #? ████████ ███████ ███████ ████████ 
 #?    ██    ██      ██         ██    
@@ -99,6 +103,12 @@ FROM devbase as test
 ENV RAILS_ENV="test" \
     BUNDLE_PATH="/usr/local/bundle"
 
+# Copy Gemfile
+USER root
+COPY Gemfile Gemfile.lock ./
+RUN chmod ugo+rwx Gemfile.lock
+USER rails
+
 ## Install application gems
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
@@ -107,7 +117,17 @@ RUN bundle install && \
 ## Copy application code
 COPY . .
 
-CMD ["/bin/zsh"]
+## Run and own only the runtime files
+USER root
+RUN chown -R rails:rails db/ log/ storage/ tmp/
+
+# Add a custom entrypoint script
+COPY entrypoint.sh /usr/bin/entrypoint.sh
+RUN chmod +x /usr/bin/entrypoint.sh
+
+USER rails
+ENTRYPOINT [ "entrypoint.sh" ]
+
 
 #* ██████  ██████   ██████  ██████  ██    ██  ██████ ████████ ██  ██████  ███    ██ 
 #* ██   ██ ██   ██ ██    ██ ██   ██ ██    ██ ██         ██    ██ ██    ██ ████   ██ 
@@ -118,8 +138,6 @@ CMD ["/bin/zsh"]
 
 FROM rubybase as production
 
-USER rails
-
 ## Copy built artifacts: gems, application
 ## COPY --from=build /usr/local/bundle /usr/local/bundle
 ## COPY --from=build /rails /rails
@@ -129,6 +147,11 @@ ENV RAILS_ENV="production" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development:test"
 
+# Copy Gemfile
+COPY Gemfile Gemfile.lock ./
+RUN chmod ugo+rwx Gemfile.lock
+USER rails
+
 ## Install application gems
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
@@ -136,3 +159,15 @@ RUN bundle install && \
 
 ## Copy application code
 COPY . .
+
+## Run and own only the runtime files
+USER root
+RUN chown -R rails:rails db/ log/ storage/ tmp/
+
+# Add a custom entrypoint script
+COPY entrypoint.sh /usr/bin/entrypoint.sh
+RUN chmod +x /usr/bin/entrypoint.sh
+
+USER rails
+ENTRYPOINT [ "entrypoint.sh" ]
+
